@@ -31,24 +31,6 @@ fn merge<T: Ord + Clone>(a: &[T], b: &[T], result: &mut [T]) {
     debug_assert!(i == a.len() && j == b.len());
 }
 
-/// Sorts `arr[l, r)` recursively.
-#[debug_requires(l <= r && r <= arr.len())]
-#[debug_ensures(is_sorted(&arr[l..r]))]
-fn mergesort<T: Ord + Clone>(arr: &mut [T], l: usize, r: usize) {
-    if r - l <= 1 {
-        return;
-    }
-
-    let mid = l + (r - l) / 2;
-    mergesort(arr, l, mid);
-    debug_assert!(is_sorted(&arr[l..mid]));
-    mergesort(arr, mid, r);
-    debug_assert!(is_sorted(&arr[mid..r]));
-    let mut result = arr[l..r].to_vec();
-    merge(&arr[l..mid], &arr[mid..r], &mut result);
-    arr[l..r].clone_from_slice(&result);
-}
-
 /**
 Merge Sort
 
@@ -64,7 +46,18 @@ Stable?: Yes
 */
 #[debug_ensures(is_sorted(arr))]
 pub fn sort<T: Ord + Clone>(arr: &mut [T]) {
-    mergesort(arr, 0, arr.len());
+    if arr.len() <= 1 {
+        return;
+    }
+
+    let mid = arr.len() / 2;
+    sort(&mut arr[..mid]);
+    debug_assert!(is_sorted(&arr[..mid]));
+    sort(&mut arr[mid..]);
+    debug_assert!(is_sorted(&arr[mid..]));
+    let mut result = arr.to_vec();
+    merge(&arr[..mid], &arr[mid..], &mut result);
+    arr.clone_from_slice(&result);
 }
 
 #[cfg(test)]
