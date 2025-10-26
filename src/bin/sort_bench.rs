@@ -1,5 +1,8 @@
 use plotters::prelude::*;
-use safe_dsa::sorting::{bubble_sort, merge_sort, quick_sort, selection_sort};
+use safe_dsa::sorting::{
+    bubble_sort, heap_sort, insertion_sort, merge_sort, quick_sort, selection_sort,
+    shell_sort_a003462,
+};
 use std::error::Error;
 use std::fs;
 use std::path::Path;
@@ -39,6 +42,26 @@ fn main() -> Result<(), Box<dyn Error>> {
         SortSpec {
             name: "Quick Sort",
             func: quick_sort::sort::<i32>,
+            max_size: 1_000_000,
+        },
+        SortSpec {
+            name: "Insertion Sort",
+            func: insertion_sort::sort::<i32>,
+            max_size: 50_000,
+        },
+        SortSpec {
+            name: "Heap Sort",
+            func: heap_sort::sort::<i32>,
+            max_size: 1_000_000,
+        },
+        SortSpec {
+            name: "Shell Sort A003462",
+            func: shell_sort_a003462::sort::<i32>,
+            max_size: 1_000_000,
+        },
+        SortSpec {
+            name: "Rust Unstable Sort",
+            func: |arr: &mut [i32]| arr.sort_unstable(),
             max_size: 1_000_000,
         },
     ];
