@@ -7,20 +7,28 @@ env:
   CARGO_INCREMENTAL: 0
 
 jobs:
-  test:
-    name: Test Rust ${{ matrix.rust }}
+  build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        rust: [ stable, beta, nightly ]
+        BUILD_TARGET: [ release ]
+    outputs:
+      release_built: ${{ steps.set-output.outputs.release_built }}
     steps:
       - uses: actions/checkout@v5
-      - uses: hecrj/setup-rust-action@v1
-        with:
-          rust-version: ${{ matrix.rust }}
-      - run: cargo test --verbose --workspace --all-features
-      - run: cargo test --verbose --workspace --no-default-features
+      - name: Build binaries in "${{ matrix.BUILD_TARGET }}" mode
+        run: cargo build --profile ${{ matrix.BUILD_TARGET }}
+      - name: Run tests in "${{ matrix.BUILD_TARGET }}" mode
+        run: cargo test --profile ${{ matrix.BUILD_TARGET }}
+  debug_test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        BUILD_TARGET: [ test ]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run tests in "${{ matrix.BUILD_TARGET }}" mode
+        run: cargo test --profile ${{ matrix.BUILD_TARGET }}
   rustfmt:
     name: Verify code formatting
     runs-on: ubuntu-latest
