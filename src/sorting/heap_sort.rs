@@ -68,13 +68,15 @@ pub fn sort<T: Ord>(arr: &mut [T]) {
 
     // Now swap largest with end element and sift down
     for i in (1..n).rev() {
+        debug_assert!(is_sorted(&arr[i..]));
+
         arr.swap(0, i);
         sift_down(arr, 0, i - 1);
 
         debug_assert!(is_heap(&arr[0..i]));
         debug_assert!(ge_seg(&arr[0], &arr[0..i]));
         // The suffix is now sorted
-        debug_assert!(is_sorted(&arr[i..]));
+        debug_assert!(is_sorted(&arr[i - 1..]));
     }
 }
 
